@@ -50,6 +50,7 @@ void on_center_button() {
  */
 void initialize() {
 	pros::lcd::initialize();
+	printf("initialized screen");
 	pros::lcd::set_text(1, "Hello PROS User!");
 
 	pros::lcd::register_btn1_cb(on_center_button);
@@ -71,7 +72,9 @@ void disabled() {}
  * This task will exit when the robot is enabled and autonomous or opcontrol
  * starts.
  */
-void competition_initialize() {}
+void competition_initialize() {
+
+}
 
 /**
  * Runs the user autonomous code. This function will be started in its own task
@@ -98,6 +101,9 @@ void opcontrol() {
 	pros::lcd::set_text(2, "Pogchamp");
 	auto xModel = std::dynamic_pointer_cast<XDriveModel>(chassis->getModel());
 	while (true) {
+		pros::lcd::print(0, "%d %d %d", (pros::lcd::read_buttons() & LCD_BTN_LEFT) >> 2,
+											 (pros::lcd::read_buttons() & LCD_BTN_CENTER) >> 1,
+											 (pros::lcd::read_buttons() & LCD_BTN_RIGHT) >> 0);
 		xModel->xArcade(
 			controller.getAnalog(ControllerAnalog::leftX),
 			controller.getAnalog(ControllerAnalog::leftY),
