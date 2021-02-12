@@ -1,16 +1,20 @@
 #include "main.h"
 
-Motor left_mtr_front(1, false, AbstractMotor::gearset::green, AbstractMotor::encoderUnits::degrees);
+Motor left_mtr_front(1, true, AbstractMotor::gearset::green, AbstractMotor::encoderUnits::degrees);
 Motor left_mtr_back(6, false, AbstractMotor::gearset::green, AbstractMotor::encoderUnits::degrees);
-Motor right_mtr_front(11, true, AbstractMotor::gearset::green, AbstractMotor::encoderUnits::degrees);
+Motor right_mtr_front(11, false, AbstractMotor::gearset::green, AbstractMotor::encoderUnits::degrees);
 Motor right_mtr_back(16, true, AbstractMotor::gearset::green, AbstractMotor::encoderUnits::degrees);
 
 Motor lift_bottom(15, false, AbstractMotor::gearset::green, AbstractMotor::encoderUnits::degrees);
 Motor lift_top(3, false, AbstractMotor::gearset::green, AbstractMotor::encoderUnits::degrees);
 
+Motor intake_left(20, false, AbstractMotor::gearset::green, AbstractMotor::encoderUnits::degrees);
+Motor intake_right(10, true, AbstractMotor::gearset::green, AbstractMotor::encoderUnits::degrees);
+
 auto chassis = ChassisControllerBuilder()
 															.withMotors(left_mtr_front, right_mtr_front, right_mtr_back, left_mtr_back)
-															.withDimensions(AbstractMotor::gearset::green, {{4_in, 11.5_in}, imev5GreenTPR})
+//															.withMotors({left_mtr_front, left_mtr_back}, {right_mtr_front, right_mtr_back})
+															.withDimensions(AbstractMotor::gearset::green, {{4_in, 12_in}, imev5GreenTPR})
 															.withOdometry()
 															.build();
 
@@ -18,6 +22,9 @@ Controller controller(ControllerId::master);
 ControllerButton lift_up(ControllerDigital::R1);
 ControllerButton lift_down(ControllerDigital::R2);
 ControllerButton poop(ControllerDigital::A);
+
+ControllerButton intake_in(ControllerDigital::L1);
+ControllerButton intake_out(ControllerDigital::L2);
 
 /**
  * A callback function for LLEMU's center button.
@@ -78,13 +85,17 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
-	auto xModel = std::dynamic_pointer_cast<XDriveModel>(chassis->getModel());
-	lift_top.moveVoltage(12000);
-	lift_bottom.moveVoltage(-12000);
-	pros::delay(2000);
+	//lift_top.moveVoltage(12000);
+	//lift_bottom.moveVoltage(-12000);
+	//pros::delay(2000);
+	//lift_top.moveVoltage(0);
+	//lift_bottom.moveVoltage(0);
+	//chassis->moveDistance(-2_ft);
+	//chassis->turnAngle(-250_deg);
 }
 
 void opcontrol() {
+	pros::lcd::set_text(2, "Pogchamp");
 	auto xModel = std::dynamic_pointer_cast<XDriveModel>(chassis->getModel());
 	while (true) {
 		xModel->xArcade(
@@ -106,5 +117,10 @@ void opcontrol() {
 			lift_top.moveVoltage(0);
 			lift_bottom.moveVoltage(0);
 		}
+
+		int intake_thing = (intake_in.isPressed() - intake_out.isPressed());
+		intake_left.moveVoltage(intake_thing);
+		intake_right.moveVoltage(intake_thing);
+
 	}
 }
