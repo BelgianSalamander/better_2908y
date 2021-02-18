@@ -103,6 +103,11 @@ void autonomous() {
 
 void opcontrol() {
 	pros::lcd::set_text(2, "Pogchamp");
+	int start = pros::millis();
+
+	int rumble[6] = {95000, 100000, 101000, 102000, 103000, 104000};
+	int index = 0;
+
 	auto xModel = std::dynamic_pointer_cast<XDriveModel>(chassis->getModel());
 	while (true) {
 		pros::lcd::print(0, "%d %d %d", (pros::lcd::read_buttons() & LCD_BTN_LEFT) >> 2,
@@ -130,7 +135,11 @@ void opcontrol() {
 
 		int intake_thing = 12000 * (intake_in.isPressed() - intake_out.isPressed());
 		intake_left.moveVoltage(intake_thing);
-		intake_right.moveVoltage(intake_thing);
-
+	  int time_ =  pros::millis();
+		if(time_ - start >= rumble[index]){
+			index++;
+			controller.rumble("-");
+		}
 	}
+
 }
