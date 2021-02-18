@@ -54,6 +54,8 @@ void initialize() {
 	pros::lcd::set_text(1, "Hello PROS User!");
 
 	pros::lcd::register_btn1_cb(on_center_button);
+	pros::lcd::register_btn2_rb(on_right_button);
+	pros::lcd::register_btn3_lb(on_left_button);
 }
 
 /**
@@ -88,11 +90,13 @@ void competition_initialize() {
  * from where it left off.
  */
 void autonomous() {
-	//lift_top.moveVoltage(12000);
-	//lift_bottom.moveVoltage(-12000);
-	//pros::delay(2000);
-	//lift_top.moveVoltage(0);
-	//lift_bottom.moveVoltage(0);
+
+
+	lift_top.moveVoltage(12000);
+	lift_bottom.moveVoltage(-12000);
+	pros::delay(2000);
+	lift_top.moveVoltage(0);
+	lift_bottom.moveVoltage(0);
 	//chassis->moveDistance(-2_ft);
 	//chassis->turnAngle(-250_deg);
 }
@@ -124,7 +128,7 @@ void opcontrol() {
 			lift_bottom.moveVoltage(0);
 		}
 
-		int intake_thing = (intake_in.isPressed() - intake_out.isPressed());
+		int intake_thing = 12000 * (intake_in.isPressed() - intake_out.isPressed());
 		intake_left.moveVoltage(intake_thing);
 		intake_right.moveVoltage(intake_thing);
 
