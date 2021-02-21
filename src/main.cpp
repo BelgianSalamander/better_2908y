@@ -103,7 +103,7 @@ void autonomous() {
 }
 
 void opcontrol() {
-	pros::lcd::set_text(2, "Pogchamp");
+	//pros::lcd::set_text(2, "Pogchamp");
 	int start = pros::millis();
 
 	int rumble[6] = {95000, 100000, 101000, 102000, 103000, 104000};
