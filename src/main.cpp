@@ -65,6 +65,7 @@ void initialize() {
  */
 void disabled() {}
 
+
 /**
  * Runs after initialize(), and before autonomous when connected to the Field
  * Management System or the VEX Competition Switch. This is intended for
@@ -135,6 +136,7 @@ void opcontrol() {
 
 		int intake_thing = 12000 * (intake_in.isPressed() - intake_out.isPressed());
 		intake_left.moveVoltage(intake_thing);
+		intake_right.moveVoltage(intake_thing);
 	  int time_ =  pros::millis();
 		if(time_ - start >= rumble[index]){
 			index++;
