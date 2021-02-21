@@ -1,4 +1,6 @@
 #include "main.h"
+#include <vector>
+#include <string>
 
 Motor left_mtr_front(18, true, AbstractMotor::gearset::green, AbstractMotor::encoderUnits::degrees);
 Motor left_mtr_back(10, false, AbstractMotor::gearset::green, AbstractMotor::encoderUnits::degrees);
@@ -26,20 +28,61 @@ ControllerButton poop(ControllerDigital::A);
 ControllerButton intake_in(ControllerDigital::L1);
 ControllerButton intake_out(ControllerDigital::L2);
 
+bool auton_left = false;
+bool auton_mid = true;
+bool auton_right = false;
+
 /**
  * A callback function for LLEMU's center button.
  *
  * When this callback is fired, it will toggle line 2 of the LCD text between
  * "I was pressed!" and nothing.
  */
-void on_center_button() {
-	static bool pressed = false;
-	pressed = !pressed;
-	if (pressed) {
-		pros::lcd::set_text(2, "I was pressed!");
-	} else {
-		pros::lcd::clear_line(2);
+
+void update_auton_description(){
+	std::vector<std::string> text;
+	if(auton_left){
+		text.push_back("left");
 	}
+	if(auton_mid){
+		text.push_back("middle");
+	}
+	if(auton_right){
+		text.push_back("right");
+	}
+
+	std::string msg = "Auton will score in ";
+
+	switch(text.size()){
+		case(3):
+			msg = msg + "the left, middle and right goals!";
+			break;
+		case(2):
+			msg = msg + "the " + text[0] + " and  " + text[1] + " goals!";
+			break;
+		case(1):
+			msg = msg + "the " + text[0] + " goal!";
+			break;
+		case(0):
+			msg = msg + "no goals! :(";
+	}
+
+	pros::lcd::set_text(2, msg);
+}
+
+void on_left_button(){
+	auton_left = !auton_left;
+	update_auton_description();
+}
+
+void on_center_button() {
+	auton_mid = !auton_mid;
+	update_auton_description();
+}
+
+void on_right_button(){
+	auton_right = !auton_right;
+	update_auton_description();
 }
 
 /**
@@ -51,11 +94,11 @@ void on_center_button() {
 void initialize() {
 	pros::lcd::initialize();
 	printf("initialized screen");
-	pros::lcd::set_text(1, "Hello PROS User!");
+	update_auton_description();
 
 	pros::lcd::register_btn1_cb(on_center_button);
-	//pros::lcd::register_btn2_cb(on_right_button);
-	//pros::lcd::register_btn0_cb(on_left_button);
+	pros::lcd::register_btn2_cb(on_right_button);
+	pros::lcd::register_btn0_cb(on_left_button);
 }
 
 /**
