@@ -37,7 +37,7 @@ bool auton[3] = {false, true, false};
 bool not_started = true;
 short toggle_index = 1;
 
-void moveDistance(okapi::QLength distance, int timeout) {
+void moveDistance(okapi::QLength distance, int timeout = 2000) {
      chassis->moveDistanceAsync(distance); // move to the target asynchronously (without waiting)
      long endTime = pros::millis() + timeout; // determine when to stop if it hasnt settled
      while(!chassis->isSettled()) { // loop if not settled
@@ -48,6 +48,10 @@ void moveDistance(okapi::QLength distance, int timeout) {
      }
 }
 
+/*void moveDistance(okapi::QLength distance){
+	moveDistance(distance, 2000);
+}*/
+
 void turnAngle(okapi::QAngle angle, int timeout = 2000) {
      chassis->turnAngle(angle); // move to the target asynchronously (without waiting)
      long endTime = pros::millis() + timeout; // determine when to stop if it hasnt settled
@@ -57,6 +61,22 @@ void turnAngle(okapi::QAngle angle, int timeout = 2000) {
                break; // break the loop and continue with autonomous
           }
      }
+}
+
+void score(int delay = 2000){
+	lift_top.moveVoltage(12000);
+	lift_bottom.moveVoltage(12000);
+	pros::delay(2000);
+	lift_top.moveVoltage(0);
+	lift_bottom.moveVoltage(0);
+}
+
+void releaseIntakes(){
+	intake_left.moveVoltage(12000);
+	intake_right.moveVoltage(12000);
+	pros::delay(500);
+	intake_left.moveVoltage(0);
+	intake_right.moveVoltage(0);
 }
 
 /**
@@ -208,13 +228,17 @@ void autonomous() {
 		case 0:   //Nothing selected
 			break;
 		case 1:   //Left goal selected
-			break;
+			releaseIntakes();
+			moveDistance(1_ft);
+			score();
 		case 2:   //Middle goal selected
-			break;
+			score();
 		case 3:   //Left and middle goal selected
 			break;
 		case 4:   //Right goal selected
-			break;
+			releaseIntakes();
+			moveDistance(1_ft);
+			score();
 		case 5:   //Left and right goal selected
 			break;
 		case 6:   //Middle and right goals selected
@@ -225,7 +249,6 @@ void autonomous() {
 }
 
 void opcontrol() {
-	not_started = false;
 	int start = pros::millis();
 
 	int rumble[6] = {95000, 100000, 101000, 102000, 103000, 104000};
