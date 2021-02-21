@@ -54,8 +54,8 @@ void initialize() {
 	pros::lcd::set_text(1, "Hello PROS User!");
 
 	pros::lcd::register_btn1_cb(on_center_button);
-	pros::lcd::register_btn2_rb(on_right_button);
-	pros::lcd::register_btn3_lb(on_left_button);
+	//pros::lcd::register_btn2_rb(on_right_button);
+	//pros::lcd::register_btn3_lb(on_left_button);
 }
 
 /**
@@ -64,6 +64,7 @@ void initialize() {
  * the robot is enabled, this task will exit.
  */
 void disabled() {}
+
 
 /**
  * Runs after initialize(), and before autonomous when connected to the Field
@@ -135,6 +136,7 @@ void opcontrol() {
 
 		int intake_thing = 12000 * (intake_in.isPressed() - intake_out.isPressed());
 		intake_left.moveVoltage(intake_thing);
+		intake_right.moveVoltage(intake_thing);
 	  int time_ =  pros::millis();
 		if(time_ - start >= rumble[index]){
 			index++;
