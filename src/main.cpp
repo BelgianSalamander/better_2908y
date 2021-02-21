@@ -67,7 +67,7 @@ void update_auton_description(){
 			msg = msg + "no goals! :(";
 	}
 
-	pros::lcd::set_text(2, msg);
+	//pros::lcd::set_text(2, msg);
 }
 
 void on_left_button(){
@@ -92,8 +92,10 @@ void on_right_button(){
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
+	pros::delay(100);
 	pros::lcd::initialize();
 	printf("initialized screen");
+	pros::delay(100);
 	update_auton_description();
 
 	pros::lcd::register_btn1_cb(on_center_button);
@@ -146,7 +148,7 @@ void autonomous() {
 }
 
 void opcontrol() {
-	//pros::lcd::set_text(2, "Pogchamp");
+	pros::lcd::set_text(2, "Pogchamp");
 	int start = pros::millis();
 
 	int rumble[6] = {95000, 100000, 101000, 102000, 103000, 104000};
