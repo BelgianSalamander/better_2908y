@@ -1,6 +1,7 @@
 #include "main.h"
 #include <vector>
 #include <string>
+#include <sstream>
 
 Motor left_mtr_front(18, true, AbstractMotor::gearset::green, AbstractMotor::encoderUnits::degrees);
 Motor left_mtr_back(10, false, AbstractMotor::gearset::green, AbstractMotor::encoderUnits::degrees);
@@ -28,9 +29,35 @@ ControllerButton poop(ControllerDigital::A);
 ControllerButton intake_in(ControllerDigital::L1);
 ControllerButton intake_out(ControllerDigital::L2);
 
-bool auton_left = false;
-bool auton_mid = true;
-bool auton_right = false;
+ControllerButton left(ControllerDigital::left);
+ControllerButton right(ControllerDigital::right);
+ControllerButton A(ControllerDigital::A);
+
+bool auton[3] = {false, true, false};
+bool not_started = true;
+short toggle_index = 1;
+
+void moveDistance(okapi::QLength distance, int timeout) {
+     chassis->moveDistanceAsync(distance); // move to the target asynchronously (without waiting)
+     long endTime = pros::millis() + timeout; // determine when to stop if it hasnt settled
+     while(!chassis->isSettled()) { // loop if not settled
+          if(pros::millis() >= endTime) { // if not settled and time has ran out
+             chassis->stop();
+               break; // break the loop and continue with autonomous
+          }
+     }
+}
+
+void turnAngle(okapi::QAngle angle, int timeout = 2000) {
+     chassis->turnAngle(angle); // move to the target asynchronously (without waiting)
+     long endTime = pros::millis() + timeout; // determine when to stop if it hasnt settled
+     while(!chassis->isSettled()) { // loop if not settled
+          if(pros::millis() >= endTime) { // if not settled and time has ran out
+             chassis->stop();
+               break; // break the loop and continue with autonomous
+          }
+     }
+}
 
 /**
  * A callback function for LLEMU's center button.
@@ -39,49 +66,85 @@ bool auton_right = false;
  * "I was pressed!" and nothing.
  */
 
+
 void update_auton_description(){
 	std::vector<std::string> text;
-	if(auton_left){
+	if(auton[0]){
 		text.push_back("left");
 	}
-	if(auton_mid){
+	if(auton[1]){
 		text.push_back("middle");
 	}
-	if(auton_right){
+	if(auton[2]){
 		text.push_back("right");
 	}
 
-	std::string msg = "Auton will score in ";
+	std::string msg1 = "Auton will score in ";
+	std::string msg2 = "";
 
 	switch(text.size()){
 		case(3):
-			msg = msg + "the left, middle and right goals!";
+			msg1 = msg1 + "the left,";
+			msg2 = "middle and right goals!";
 			break;
 		case(2):
-			msg = msg + "the " + text[0] + " and  " + text[1] + " goals!";
+			msg1 = msg1 + "the " + text[0];
+			msg2 = "and  " + text[1] + " goals!";
 			break;
 		case(1):
-			msg = msg + "the " + text[0] + " goal!";
+			msg1 = msg1 + "the " + text[0];
+			msg2 = "goal!";
 			break;
 		case(0):
-			msg = msg + "no goals! :(";
+			msg1 = msg1 + "no goals! :(";
 	}
 
-	//pros::lcd::set_text(2, msg);
+	pros::lcd::set_text(0, msg1);
+	pros::lcd::set_text(1, msg2);
+
+	controller.clearLine(0);
+	pros::delay(50);
+	controller.clearLine(1);
+	pros::delay(50);
+	std::ostringstream ss;
+	ss << auton[0] << "   " << auton[1] << "   " << auton[2];
+	controller.setText(0, 0, ss.str());
+	std::string arrow_ting = "         ";
+	arrow_ting[toggle_index * 4] = '^';
+	pros::delay(50);
+	std::ostringstream ss2;
+	controller.setText(1, 0, arrow_ting);
+}
+
+void left_right_press_ting(){
+	while(not_started){
+		if(left.changedToPressed()){
+			printf("Left");
+			toggle_index = (toggle_index - 1) % 3;
+			update_auton_description();
+		}else if(right.changedToPressed()){
+			toggle_index = (toggle_index + 1) % 3;
+			update_auton_description();
+		}else if(A.changedToPressed()){
+			auton[toggle_index] = !auton[toggle_index];
+			update_auton_description();
+		}
+		pros::delay(50);
+	}
 }
 
 void on_left_button(){
-	auton_left = !auton_left;
+	auton[0] = !auton[0];
 	update_auton_description();
 }
 
 void on_center_button() {
-	auton_mid = !auton_mid;
+	auton[1] = !auton[1];
 	update_auton_description();
 }
 
 void on_right_button(){
-	auton_right = !auton_right;
+	auton[2] = !auton[2];
 	update_auton_description();
 }
 
@@ -92,15 +155,20 @@ void on_right_button(){
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
-	pros::delay(100);
+
 	pros::lcd::initialize();
 	printf("initialized screen");
-	pros::delay(100);
+
+	//pros::lcd::set_text(0, "Poggers");
+	printf("%d",pros::lcd::is_initialized());
 	update_auton_description();
 
 	pros::lcd::register_btn1_cb(on_center_button);
 	pros::lcd::register_btn2_cb(on_right_button);
 	pros::lcd::register_btn0_cb(on_left_button);
+
+	pros::Task button_detect(left_right_press_ting);
+
 }
 
 /**
@@ -136,19 +204,28 @@ void competition_initialize() {
  * from where it left off.
  */
 void autonomous() {
-
-
-	lift_top.moveVoltage(12000);
-	lift_bottom.moveVoltage(-12000);
-	pros::delay(2000);
-	lift_top.moveVoltage(0);
-	lift_bottom.moveVoltage(0);
-	//chassis->moveDistance(-2_ft);
-	//chassis->turnAngle(-250_deg);
+	switch(auton[0] + auton[1] * 2 + auton[2] * 4){
+		case 0:   //Nothing selected
+			break;
+		case 1:   //Left goal selected
+			break;
+		case 2:   //Middle goal selected
+			break;
+		case 3:   //Left and middle goal selected
+			break;
+		case 4:   //Right goal selected
+			break;
+		case 5:   //Left and right goal selected
+			break;
+		case 6:   //Middle and right goals selected
+			break;
+		case 7:   //All goals selected
+			break;
+	}
 }
 
 void opcontrol() {
-	pros::lcd::set_text(2, "Pogchamp");
+	not_started = false;
 	int start = pros::millis();
 
 	int rumble[6] = {95000, 100000, 101000, 102000, 103000, 104000};
@@ -156,9 +233,6 @@ void opcontrol() {
 
 	auto xModel = std::dynamic_pointer_cast<XDriveModel>(chassis->getModel());
 	while (true) {
-		pros::lcd::print(0, "%d %d %d", (pros::lcd::read_buttons() & LCD_BTN_LEFT) >> 2,
-											 (pros::lcd::read_buttons() & LCD_BTN_CENTER) >> 1,
-											 (pros::lcd::read_buttons() & LCD_BTN_RIGHT) >> 0);
 		xModel->xArcade(
 			controller.getAnalog(ControllerAnalog::leftX),
 			controller.getAnalog(ControllerAnalog::leftY),
@@ -187,6 +261,9 @@ void opcontrol() {
 			index++;
 			controller.rumble("-");
 		}
+		pros::delay(20);
 	}
+
+
 
 }
