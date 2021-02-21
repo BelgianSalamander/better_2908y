@@ -3,7 +3,7 @@
 Motor left_mtr_front(18, true, AbstractMotor::gearset::green, AbstractMotor::encoderUnits::degrees);
 Motor left_mtr_back(10, false, AbstractMotor::gearset::green, AbstractMotor::encoderUnits::degrees);
 Motor right_mtr_front(17, false, AbstractMotor::gearset::green, AbstractMotor::encoderUnits::degrees);
-Motor right_mtr_back(16, true, AbstractMotor::gearset::green, AbstractMotor::encoderUnits::degrees);
+Motor right_mtr_back(8, true, AbstractMotor::gearset::green, AbstractMotor::encoderUnits::degrees);
 
 Motor lift_bottom(6, false, AbstractMotor::gearset::green, AbstractMotor::encoderUnits::degrees);
 Motor lift_top(19, false, AbstractMotor::gearset::green, AbstractMotor::encoderUnits::degrees);
