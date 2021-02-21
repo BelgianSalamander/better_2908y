@@ -1,15 +1,15 @@
 #include "main.h"
 
-Motor left_mtr_front(1, true, AbstractMotor::gearset::green, AbstractMotor::encoderUnits::degrees);
-Motor left_mtr_back(6, false, AbstractMotor::gearset::green, AbstractMotor::encoderUnits::degrees);
-Motor right_mtr_front(11, false, AbstractMotor::gearset::green, AbstractMotor::encoderUnits::degrees);
+Motor left_mtr_front(18, true, AbstractMotor::gearset::green, AbstractMotor::encoderUnits::degrees);
+Motor left_mtr_back(8, false, AbstractMotor::gearset::green, AbstractMotor::encoderUnits::degrees);
+Motor right_mtr_front(17, false, AbstractMotor::gearset::green, AbstractMotor::encoderUnits::degrees);
 Motor right_mtr_back(16, true, AbstractMotor::gearset::green, AbstractMotor::encoderUnits::degrees);
 
-Motor lift_bottom(15, false, AbstractMotor::gearset::green, AbstractMotor::encoderUnits::degrees);
-Motor lift_top(3, false, AbstractMotor::gearset::green, AbstractMotor::encoderUnits::degrees);
+Motor lift_bottom(6, false, AbstractMotor::gearset::green, AbstractMotor::encoderUnits::degrees);
+Motor lift_top(19, false, AbstractMotor::gearset::green, AbstractMotor::encoderUnits::degrees);
 
-Motor intake_left(20, false, AbstractMotor::gearset::green, AbstractMotor::encoderUnits::degrees);
-Motor intake_right(10, true, AbstractMotor::gearset::green, AbstractMotor::encoderUnits::degrees);
+Motor intake_left(7, false, AbstractMotor::gearset::green, AbstractMotor::encoderUnits::degrees);
+Motor intake_right(9, true, AbstractMotor::gearset::green, AbstractMotor::encoderUnits::degrees);
 
 auto chassis = ChassisControllerBuilder()
 															.withMotors(left_mtr_front, right_mtr_front, right_mtr_back, left_mtr_back)
@@ -54,8 +54,8 @@ void initialize() {
 	pros::lcd::set_text(1, "Hello PROS User!");
 
 	pros::lcd::register_btn1_cb(on_center_button);
-	pros::lcd::register_btn2_rb(on_right_button);
-	pros::lcd::register_btn3_lb(on_left_button);
+	//pros::lcd::register_btn2_cb(on_right_button);
+	//pros::lcd::register_btn0_cb(on_left_button);
 }
 
 /**
