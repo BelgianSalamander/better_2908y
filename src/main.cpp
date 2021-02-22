@@ -71,12 +71,20 @@ void score(int delay = 2000){
 	lift_bottom.moveVoltage(0);
 }
 
-void releaseIntakes(){
+void activateIntakes(){
 	intake_left.moveVoltage(12000);
 	intake_right.moveVoltage(12000);
-	pros::delay(500);
+}
+
+void deactivateIntakes(){
 	intake_left.moveVoltage(0);
 	intake_right.moveVoltage(0);
+}
+
+void releaseIntakes(){
+	activateIntakes();
+	pros::delay(500);
+	deactivateIntakes();
 }
 
 /**
@@ -226,22 +234,43 @@ void competition_initialize() {
 void autonomous() {
 	switch(auton[0] + auton[1] * 2 + auton[2] * 4){
 		case 0:   //Nothing selected
+			releaseIntakes();
 			break;
 		case 1:   //Left goal selected
 			releaseIntakes();
 			moveDistance(1_ft);
 			score();
+			break;
 		case 2:   //Middle goal selected
 			score();
+			releaseIntakes();
+			break;
 		case 3:   //Left and middle goal selected
+			score();
+			releaseIntakes();
+			moveDistance(-2_ft);
+			turnAngle(160_deg);
+			activateIntakes();
+			moveDistance(6_ft);
+			score();
+			deactivateIntakes();
 			break;
 		case 4:   //Right goal selected
 			releaseIntakes();
 			moveDistance(1_ft);
 			score();
+			break;
 		case 5:   //Left and right goal selected
 			break;
 		case 6:   //Middle and right goals selected
+			score();
+			releaseIntakes();
+			moveDistance(-2_ft);
+			turnAngle(-160_deg);
+			activateIntakes();
+			moveDistance(6_ft);
+			score();
+			deactivateIntakes();
 			break;
 		case 7:   //All goals selected
 			break;
