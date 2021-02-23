@@ -249,9 +249,9 @@ void autonomous() {
 			score();
 			releaseIntakes();
 			moveDistance(-2_ft);
-			turnAngle(160_deg);
+			turnAngle(145_deg);
 			activateIntakes();
-			moveDistance(6_ft);
+			moveDistance(4.5_ft);
 			score();
 			deactivateIntakes();
 			break;
@@ -266,9 +266,9 @@ void autonomous() {
 			score();
 			releaseIntakes();
 			moveDistance(-2_ft);
-			turnAngle(-160_deg);
+			turnAngle(-145_deg);
 			activateIntakes();
-			moveDistance(6_ft);
+			moveDistance(4.5_ft);
 			score();
 			deactivateIntakes();
 			break;
