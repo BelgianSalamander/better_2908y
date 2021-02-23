@@ -35,7 +35,7 @@ ControllerButton A(ControllerDigital::A);
 
 bool auton[3] = {false, true, false};
 bool not_started = true;
-short toggle_index = 1;
+signed short toggle_index = 1;
 
 void moveDistance(okapi::QLength distance, int timeout = 2000) {
      chassis->moveDistanceAsync(distance); // move to the target asynchronously (without waiting)
