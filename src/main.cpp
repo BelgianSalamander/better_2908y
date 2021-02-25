@@ -248,8 +248,8 @@ void autonomous() {
 		case 3:   //Left and middle goal selected
 			score();
 			releaseIntakes();
-			moveDistance(-2_ft);
-			turnAngle(145_deg);
+			moveDistance(-4_ft);
+			turnAngle(-220_deg);
 			activateIntakes();
 			moveDistance(4.5_ft);
 			score();
@@ -257,6 +257,7 @@ void autonomous() {
 			break;
 		case 4:   //Right goal selected
 			releaseIntakes();
+
 			moveDistance(1_ft);
 			score();
 			break;
